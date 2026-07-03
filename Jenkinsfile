@@ -2,6 +2,10 @@ pipeline {
 
     agent any
 
+    tools {
+        maven 'mavenConfigure'
+    }
+
     parameters {
         string(
             name: 'NEXUS_USERNAME',
@@ -20,18 +24,21 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                echo 'Checking out source code...'
+                echo 'Source code checked out successfully.'
             }
         }
 
         stage('Build') {
             steps {
+                echo 'Building Spring Boot application...'
                 bat 'mvn clean package -Drevision=1.0.0-%BUILD_NUMBER%'
             }
         }
 
         stage('Deploy to Nexus') {
             steps {
+
+                echo 'Creating temporary settings.xml file...'
 
                 writeFile file: 'settings.xml', text: """
 <settings>
@@ -45,12 +52,15 @@ pipeline {
 </settings>
 """
 
+                echo 'Deploying artifact to Nexus...'
+
                 bat 'mvn deploy -s settings.xml -Drevision=1.0.0-%BUILD_NUMBER%'
             }
         }
 
         stage('Archive Artifact') {
             steps {
+                echo 'Archiving generated JAR...'
                 archiveArtifacts artifacts: 'target/*.jar'
             }
         }
@@ -64,6 +74,11 @@ pipeline {
 
         failure {
             echo 'Build Failed.'
+        }
+
+        always {
+            echo 'Cleaning temporary files...'
+            deleteDir()
         }
     }
 }
