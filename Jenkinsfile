@@ -1,7 +1,5 @@
-<<<<<<< HEAD
 properties([
     parameters([
-=======
 pipeline {
 
     agent any
@@ -64,7 +62,6 @@ node {
 
     echo 'Pipeline Completed Successfully'
 }
-=======
     }
 
     stages {
@@ -129,4 +126,3 @@ node {
         }
     }
 }
->>>>>>> b9668b04228b31668e4de114cd069dbd36b156b1
